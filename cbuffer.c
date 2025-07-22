@@ -93,11 +93,18 @@ void reset_writer(cbuffer_t *cb);
 
 /* Function definitions ----------------------------------------------- */
 void cb_init(cbuffer_t *cb, void *buf, uint32_t size)
-{ 
+{
+  cb->data = buf; // data storage of cbuffer
+  cb->writer = 0; // Set writer to 0
+  cb->reader = 0; // Set reader to 0
+  cb->overflow = 0; // Set overflow to 0
+  cb->size = size; // Set input size 
+  cb->active = TRUE; // Set the status of cbuffer to active (true)   
 }
 
 void cb_clear(cbuffer_t *cb)
 {
+
 }
 
 uint32_t cb_read(cbuffer_t *cb, void *buf, uint32_t nbytes)
@@ -145,10 +152,19 @@ uint32_t cb_write(cbuffer_t *cb, void *buf, uint32_t nbytes)
 #endif
 uint32_t cb_data_count(cbuffer_t *cb)
 {
+  if(cb->reader <= cb->writer)
+  {
+    return cb->writer - cb->reader;
+  }
+  else
+  {
+    return cb->writer + cb->size - cb->reader;
+  }
 }
 
 uint32_t cb_space_count(cbuffer_t *cb)
 {
+  return cb->size - cb_data_count(cb) - 1;
 }
 /* Private definitions ----------------------------------------------- */
 void overflow_check(cbuffer_t *cb)
