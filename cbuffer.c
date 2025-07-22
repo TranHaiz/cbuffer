@@ -26,6 +26,7 @@
 /* Private defines ---------------------------------------------------- */
 #define DEBUG
 #define CB_WRITE_VER_1
+#define FAIL -1
 
 #ifdef DEBUG
     #define DEBUG_LOG(msg)    fprintf(stderr, "[DEBUG] %s(): %s (line %d)\n", \
@@ -79,7 +80,7 @@
  */
 void overflow_check(cbuffer_t *cb);
 /**
- * @brief      Reset writer when out of size
+ * @brief      Reset writer if out of size
  *
  * @param[in]  cb  Pointer to cbuffer_t varriable
  *
@@ -108,6 +109,11 @@ uint32_t cb_write(cbuffer_t *cb, void *buf, uint32_t nbytes)
     uint32_t w_index;        //Write index
     uint8_t* w_buffer = buf; //Write buffer
 
+    if(!cb->active || cb == 0 || buf == 0)
+    {
+        DEBUG_LOG("Can't write");
+        return FAIL;
+    }
 
     for(w_index = 0; w_index < nbytes; w_index ++)
     {
@@ -115,17 +121,17 @@ uint32_t cb_write(cbuffer_t *cb, void *buf, uint32_t nbytes)
         {
             overflow_check(cb);
             cb->data[cb->writer] = w_buffer[w_index];
-            cb->writer ++;
-            reset_writer(cb);
-            printf("Lan %d: ghi %d\n", w_index, cb->overflow);
+            cb->writer ++; //increase writter
+            reset_writer(cb); 
+            DEBUG_LOG("Written");
         }
         else if(!cb->overflow)
         {
             overflow_check(cb);
             cb->data[cb->writer] = w_buffer[w_index];
-            cb->writer ++;
+            cb->writer ++; //increase writter
             reset_writer(cb);
-            printf("Lan %d: ghi %d\n", w_index, cb->overflow );
+            DEBUG_LOG("Written");
         }
         else
         {
