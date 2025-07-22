@@ -98,11 +98,13 @@ void cb_init(cbuffer_t *cb, void *buf, uint32_t size)
   cb->writer = 0; // Set writer to 0
   cb->reader = 0; // Set reader to 0
   cb->overflow = 0; // Set overflow to 0
+  cb->size = size; // Set input size 
   cb->active = TRUE; // Set the status of cbuffer to active (true)   
 }
 
 void cb_clear(cbuffer_t *cb)
 {
+
 }
 
 uint32_t cb_read(cbuffer_t *cb, void *buf, uint32_t nbytes)
