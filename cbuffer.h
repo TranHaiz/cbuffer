@@ -60,7 +60,23 @@ typedef struct
 void cb_init(cbuffer_t *cb, void *buf, uint32_t size);
 void cb_clear(cbuffer_t *cb);
 uint32_t cb_read(cbuffer_t *cb, void *buf, uint32_t nbytes);
+
+/**
+ * @brief      Write data
+ * 
+ * @details    Write a number of byte to Cbuffer and raise the writer count
+ *
+ * @param[in]  cb   Pointer to cbuffer_t varriable
+ * @param[in]  buf  Data write to cbuffer
+ * @param[in]  size Size of written data
+ *
+ * @attention  Init before use this function
+ *
+ * @return  
+ *      -The actual writtenbytes
+ */
 uint32_t cb_write(cbuffer_t *cb, void *buf, uint32_t nbytes);
+
 uint32_t cb_data_count(cbuffer_t *cb);
 uint32_t cb_space_count(cbuffer_t *cb);
 #endif                     // __CBUFFER_H
