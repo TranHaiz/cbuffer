@@ -24,7 +24,13 @@
 
 #include "cbuffer.h"
 /* Private defines ---------------------------------------------------- */
+#define DEBUG
+#define CB_WRITE_VER_1
 
+#ifdef DEBUG
+    #define DEBUG_LOG(msg)    fprintf(stderr, "[DEBUG] %s(): %s (line %d)\n", \
+                                    __func__, msg, __LINE__)
+#endif
 
 /* Private enumerate/structure ---------------------------------------- */
 /**
@@ -63,18 +69,26 @@
 
 /* Private function prototypes ---------------------------------------- */
 /**
- * @brief  <function description>
+ * @brief      Overflow check when write
  *
- * @param[in]     <param_name>  <param_despcription>
- * @param[out]    <param_name>  <param_despcription>
- * @param[inout]  <param_name>  <param_despcription>
+ * @param[in]  cb  Pointer to cbuffer_t varriable
  *
- * @attention  <API attention note>
+ * @attention  This funstion must be used before write data
  *
- * @return  
- *  - 0: Success
- *  - 1: Error
+ * @return  None
  */
+void overflow_check(cbuffer_t *cb);
+/**
+ * @brief      Reset writer when out of size
+ *
+ * @param[in]  cb  Pointer to cbuffer_t varriable
+ *
+ * @attention  This funstion must be used after write and increase writer
+ *
+ * @return  None
+ */
+void reset_writer(cbuffer_t *cb);
+
 
 /* Function definitions ----------------------------------------------- */
 void cb_init(cbuffer_t *cb, void *buf, uint32_t size)
@@ -88,11 +102,41 @@ void cb_clear(cbuffer_t *cb)
 uint32_t cb_read(cbuffer_t *cb, void *buf, uint32_t nbytes)
 { 
 }
-
+#ifdef CB_WRITE_VER_1
 uint32_t cb_write(cbuffer_t *cb, void *buf, uint32_t nbytes)
 {
-}
+    uint32_t w_index;        //Write index
+    uint8_t* w_buffer = buf; //Write buffer
 
+
+    for(w_index = 0; w_index < nbytes; w_index ++)
+    {
+        if(cb->overflow && (cb->writer < cb->reader))
+        {
+            overflow_check(cb);
+            cb->data[cb->writer] = w_buffer[w_index];
+            cb->writer ++;
+            reset_writer(cb);
+            printf("Lan %d: ghi %d\n", w_index, cb->overflow);
+        }
+        else if(!cb->overflow)
+        {
+            overflow_check(cb);
+            cb->data[cb->writer] = w_buffer[w_index];
+            cb->writer ++;
+            reset_writer(cb);
+            printf("Lan %d: ghi %d\n", w_index, cb->overflow );
+        }
+        else
+        {
+            DEBUG_LOG("OUT");
+            break;
+        }
+    }
+
+    return w_index;
+}
+#endif
 uint32_t cb_data_count(cbuffer_t *cb)
 {
 }
@@ -101,6 +145,28 @@ uint32_t cb_space_count(cbuffer_t *cb)
 {
 }
 /* Private definitions ----------------------------------------------- */
+void overflow_check(cbuffer_t *cb)
+{
+    if(cb->writer == cb->size - 1)
+    {
+        cb->overflow = TRUE; //SET OVERFLOW
+    }
+}
+void reset_writer(cbuffer_t *cb)
+{
+    if(cb->writer == cb->size)
+    {
+        cb->writer = 0;
+    }
+}
 
+
+#ifdef DEBUG
+int main()
+{
+
+    return 0;
+}
+#endif
 
 /* End of file -------------------------------------------------------- */
