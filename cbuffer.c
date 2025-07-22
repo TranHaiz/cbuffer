@@ -98,7 +98,7 @@ void cb_init(cbuffer_t *cb, void *buf, uint32_t size)
   cb->writer = 0; // Set writer to 0
   cb->reader = 0; // Set reader to 0
   cb->overflow = 0; // Set overflow to 0
-  cb->active = true; // Set the status of cbuffer to active (true)   
+  cb->active = TRUE; // Set the status of cbuffer to active (true)   
 }
 
 void cb_clear(cbuffer_t *cb)
