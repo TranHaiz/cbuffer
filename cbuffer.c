@@ -26,7 +26,6 @@
 /* Private defines ---------------------------------------------------- */
 #define DEBUG
 #define CB_WRITE_VER_1
-#define FAIL -1
 
 #ifdef DEBUG
     #define DEBUG_LOG(msg)    fprintf(stderr, "[DEBUG] %s(): %s (line %d)\n", \

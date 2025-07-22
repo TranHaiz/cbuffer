@@ -42,6 +42,8 @@
 #define CB_MAX_SIZE (0x00800000)
 #define TRUE        (1)
 #define FALSE       (0)
+#define FAIL        (-1)
+
 
 /* Public enumerate/structure ----------------------------------------- */
 typedef struct
