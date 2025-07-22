@@ -105,41 +105,41 @@ uint32_t cb_read(cbuffer_t *cb, void *buf, uint32_t nbytes)
 #ifdef CB_WRITE_VER_1
 uint32_t cb_write(cbuffer_t *cb, void *buf, uint32_t nbytes)
 {
-    uint32_t w_index;        //Write index
-    uint8_t* w_buffer = buf; //Write buffer
+  uint32_t w_index;        //Write index
+  uint8_t* w_buffer = buf; //Write buffer
 
-    if(!cb->active || cb == 0 || buf == 0)
+  if(!cb->active || cb == 0 || buf == 0)
+  {
+    DEBUG_LOG("Can't write");
+    return FAIL;
+  }
+
+  for(w_index = 0; w_index < nbytes; w_index ++)
+  {
+    if(cb->overflow && (cb->writer < cb->reader))
     {
-        DEBUG_LOG("Can't write");
-        return FAIL;
+      overflow_check(cb);
+      cb->data[cb->writer] = w_buffer[w_index];
+      cb->writer ++; //increase writter
+      reset_writer(cb); 
+      DEBUG_LOG("Written");
     }
-
-    for(w_index = 0; w_index < nbytes; w_index ++)
+    else if(!cb->overflow)
     {
-        if(cb->overflow && (cb->writer < cb->reader))
-        {
-            overflow_check(cb);
-            cb->data[cb->writer] = w_buffer[w_index];
-            cb->writer ++; //increase writter
-            reset_writer(cb); 
-            DEBUG_LOG("Written");
-        }
-        else if(!cb->overflow)
-        {
-            overflow_check(cb);
-            cb->data[cb->writer] = w_buffer[w_index];
-            cb->writer ++; //increase writter
-            reset_writer(cb);
-            DEBUG_LOG("Written");
-        }
-        else
-        {
-            DEBUG_LOG("OUT");
-            break;
-        }
+      overflow_check(cb);
+      cb->data[cb->writer] = w_buffer[w_index];
+      cb->writer ++; //increase writter
+      reset_writer(cb);
+      DEBUG_LOG("Written");
     }
+    else
+    {
+      DEBUG_LOG("OUT");
+      break;
+      }
+  }
 
-    return w_index;
+  return w_index;
 }
 #endif
 uint32_t cb_data_count(cbuffer_t *cb)
@@ -152,17 +152,17 @@ uint32_t cb_space_count(cbuffer_t *cb)
 /* Private definitions ----------------------------------------------- */
 void overflow_check(cbuffer_t *cb)
 {
-    if(cb->writer == cb->size - 1)
-    {
-        cb->overflow = TRUE; //SET OVERFLOW
-    }
+  if(cb->writer == cb->size - 1)
+  {
+    cb->overflow = TRUE; //SET OVERFLOW
+  }
 }
 void reset_writer(cbuffer_t *cb)
 {
-    if(cb->writer == cb->size)
-    {
-        cb->writer = 0;
-    }
+  if(cb->writer == cb->size)
+  {
+    cb->writer = 0;
+  }
 }
 
 
@@ -170,7 +170,7 @@ void reset_writer(cbuffer_t *cb)
 int main()
 {
 
-    return 0;
+  return 0;
 }
 #endif
 
